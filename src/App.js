@@ -1,14 +1,17 @@
+// src/App.js
 import React, { useState } from "react";
 import axios from "axios";
-import './App.css';
+import "./App.css";
 
 function App() {
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleSearch = async () => {
     try {
+      setError(null);
       const [currentWeather, forecast] = await Promise.all([
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=metric`),
         axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=YOUR_API_KEY&units=metric`),
@@ -17,26 +20,36 @@ function App() {
       setForecastData(forecast.data.list);
     } catch (error) {
       console.error('Error fetching weather data: ', error);
-      // Set an error message in state
       setWeatherData(null);
       setForecastData(null);
       setError('Error fetching weather data. Please try again.');
     }
   };
 
+  const handleClear = () => {
+    setCity("");
+    setWeatherData(null);
+    setForecastData(null);
+    setError(null);
+  };
+
   return (
-    <div>
+    <div className="App">
       <h1>Weather App</h1>
       <input type="text" placeholder="Enter City" value={city} onChange={(e) => setCity(e.target.value)} />
       <button onClick={handleSearch}>Search</button>
-      {
-        weatherData && (
-          <div>
-            <h2>{weatherData.name}</h2>
-            <p>Temperature: {weatherData.main.temp} °C</p>
-            <p>Weather: {weatherData.weather[0].description}</p>
-          </div>
-        )}
+      <button onClick={handleClear}>Clear</button>
+
+      {error && <p className="error-message">{error}</p>}
+
+      {weatherData && (
+        <div>
+          <h2>{weatherData.name}</h2>
+          <p>Temperature: {weatherData.main.temp} °C</p>
+          <p>Weather: {weatherData.weather[0].description}</p>
+        </div>
+      )}
+
       {forecastData && (
         <div>
           <h2>Five-Day Forecast</h2>
