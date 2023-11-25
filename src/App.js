@@ -17,6 +17,10 @@ function App() {
       setForecastData(forecast.data.list);
     } catch (error) {
       console.error('Error fetching weather data: ', error);
+      // Set an error message in state
+      setWeatherData(null);
+      setForecastData(null);
+      setError('Error fetching weather data. Please try again.');
     }
   };
 
